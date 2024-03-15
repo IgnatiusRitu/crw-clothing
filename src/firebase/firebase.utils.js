@@ -1,6 +1,6 @@
 import {initializeApp} from 'firebase/app'
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
-import {  addDoc, collection, doc, getDoc, getFirestore, onSnapshot, setDoc} from 'firebase/firestore'
+import {  doc, getDoc, getFirestore, onSnapshot, setDoc} from 'firebase/firestore'
 
 
 const config = {
@@ -44,11 +44,14 @@ const db = getFirestore();
   
 
 const provider = new GoogleAuthProvider();
-export const signInWithGoogle = async() =>{ await signInWithPopup(auth, provider).then(result=>{
-    const user = result.user;
-    console.log(user.email)
-  }).catch(error=>{
-    const errorMessage = error.message;
-    console.log(errorMessage)
-  })}
+
+export const signInWithGoogle = async() =>{ 
+  try{
+    const {user} = await signInWithPopup(auth, provider)
+    // console.log(user);
+
+  }catch(error){
+    console.log(error.message);
+  }
+  }
 
