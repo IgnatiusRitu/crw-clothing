@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Header from "./components/header/header.component";
 import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
@@ -13,6 +13,7 @@ import "./App.css";
 
 function App() {
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.user.currentUser);
 
   useEffect(() => {
     let unsubscribeFromAuth = null;
@@ -33,7 +34,7 @@ function App() {
       createUserProfileDocument(userAuth);
     });
     return () => unsubscribeFromAuth();
-  });
+  }, []);
 
   return (
     <div>
@@ -41,7 +42,12 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ShopPage />} />
-        <Route path="/signin" element={<SignInAndSignUpPage />} />
+        <Route
+          path="/signin"
+          element={
+            currentUser ? <Navigate to={"/"} /> : <SignInAndSignUpPage />
+          }
+        />
       </Routes>
     </div>
   );
