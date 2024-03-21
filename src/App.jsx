@@ -1,60 +1,50 @@
-import { Component } from "react";
+import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Header from "./components/header/header.component";
 import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 import { onSnapshot } from "firebase/firestore";
+import { setCurrentUser } from "./redux/user/userSlice";
 
 import "./App.css";
 
-class App extends Component {
-  constructor() {
-    super();
+function App() {
+  const dispatch = useDispatch();
 
-    this.state = {
-      currentUser: null,
-    };
-  }
-
-  unsubscribeFromAuth = null;
-  componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+  useEffect(() => {
+    let unsubscribeFromAuth = null;
+    unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
         onSnapshot(userRef, (snapShot) => {
-          this.setState({
-            currentUser: {
+          dispatch(
+            setCurrentUser({
               id: snapShot.id,
               ...snapShot.data(),
-            },
-          });
+            })
+          );
         });
       } else {
-        this.setState({ currentUser: userAuth });
+        dispatch(setCurrentUser(userAuth));
       }
-
       createUserProfileDocument(userAuth);
     });
-  }
+    return () => unsubscribeFromAuth();
+  });
 
-  componentWillUnmount() {
-    this.unsubscribeFromAuth();
-  }
-
-  render() {
-    return (
-      <div>
-        <Header currentUser={this.state.currentUser} />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/shop" element={<ShopPage />} />
-          <Route path="/signin" element={<SignInAndSignUpPage />} />
-        </Routes>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/shop" element={<ShopPage />} />
+        <Route path="/signin" element={<SignInAndSignUpPage />} />
+      </Routes>
+    </div>
+  );
 }
 
 export default App;
