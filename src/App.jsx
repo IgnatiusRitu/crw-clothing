@@ -34,7 +34,7 @@ function App() {
       createUserProfileDocument(userAuth);
     });
     return () => unsubscribeFromAuth();
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>
