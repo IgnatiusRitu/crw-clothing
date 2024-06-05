@@ -4,9 +4,10 @@ import usersReducer from "../redux/user/userSlice";
 import cartReducer from "../redux/cart/cartSlice";
 
 export const store = configureStore({
-    reducer:{
-        user: usersReducer,
-        cart: cartReducer
-    },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false}).concat(logger), 
-})
+  reducer: {
+    user: usersReducer,
+    cart: cartReducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }).concat(logger),
+});
